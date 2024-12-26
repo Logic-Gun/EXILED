@@ -123,8 +123,8 @@ namespace Exiled.Events.Patches.Events.Scp914
 
             const int continueOffset = -4;
 
-            // Find the call of InventoryItemUpgraded
-            int continueIndex = newInstructions.FindIndex(instruction => instruction.Calls(Method(typeof(Scp914ItemProcessor), nameof(Scp914ItemProcessor.OnInventoryItemUpgraded)))) + continueOffset;
+            // Find the call of OnUpgraded
+            int continueIndex = newInstructions.FindIndex(instruction => instruction.Calls(Method(typeof(Scp914ItemProcessor), nameof(Scp914ItemProcessor.OnUpgraded)))) + continueOffset;
 
             LocalBuilder ev2 = generator.DeclareLocal(typeof(UpgradingInventoryItemEventArgs));
 

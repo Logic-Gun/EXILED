@@ -265,7 +265,7 @@ namespace Exiled.Events.Patches.Events.Player
                 }
 
                 foreach (ItemType item in ev.Items)
-                    inventory.ServerAddItem(item);
+                    inventory.ServerAddItem(item, InventorySystem.Items.ItemAddReason.StartingItem);
 
                 foreach (KeyValuePair<ItemType, ushort> keyValuePair in ev.Ammo)
                     inventory.ServerAddAmmo(keyValuePair.Key, keyValuePair.Value);

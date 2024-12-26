@@ -13,6 +13,7 @@ namespace Exiled.API.Extensions
 
     using Enums;
     using Features.Items;
+    using Footprinting;
     using InventorySystem;
     using InventorySystem.Items;
     using InventorySystem.Items.Firearms.Attachments;
@@ -28,6 +29,20 @@ namespace Exiled.API.Extensions
     /// </summary>
     public static class ItemExtensions
     {
+        /// <summary>
+        /// Check if <see cref="Footprint"/> is equal to <see cref="ReferenceHub"/>.
+        /// </summary>
+        /// <param name="footprint">
+        /// Initiator of the event.
+        /// </param>
+        /// <param name="hub">
+        /// Hub to equals with initiator.
+        /// </param>
+        /// <returns>
+        /// A boolean value indicating whether the initiator is equal to the hub for comparison or not.
+        /// </returns>
+        public static bool SameLife(this Footprint footprint, ReferenceHub hub) => footprint.Hub.Equals(hub);
+
         /// <summary>
         /// Check if an <see cref="ItemType">item</see> is an ammo.
         /// </summary>

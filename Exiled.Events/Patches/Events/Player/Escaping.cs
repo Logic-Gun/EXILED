@@ -38,7 +38,6 @@ namespace Exiled.Events.Patches.Events.Player
         {
             List<CodeInstruction> newInstructions = ListPool<CodeInstruction>.Pool.Get(instructions);
 
-            List<Label> labels;
             Label returnLabel = generator.DefineLabel();
 
             LocalBuilder ev = generator.DeclareLocal(typeof(EscapingEventArgs));
@@ -86,32 +85,12 @@ namespace Exiled.Events.Patches.Events.Player
                     new(OpCodes.Stloc_0),
                 });
 
-            // replace base-game grant token logic
-            offset = -2;
-            index = newInstructions.FindIndex(instruction => instruction.Calls(Method(typeof(RespawnTokensManager), nameof(RespawnTokensManager.GrantTokens)))) + offset;
-            labels = newInstructions[index].ExtractLabels();
-            newInstructions.RemoveRange(index, 3);
-            newInstructions.InsertRange(
-                index,
-                new CodeInstruction[]
-                {
-                    // GrantAllTickets(ev)
-                    new CodeInstruction(OpCodes.Ldloc, ev.LocalIndex).WithLabels(labels),
-                    new(OpCodes.Call, Method(typeof(Escaping), nameof(GrantAllTickets))),
-                });
-
             newInstructions[newInstructions.Count - 1].WithLabels(returnLabel);
 
             for (int z = 0; z < newInstructions.Count; z++)
                 yield return newInstructions[z];
 
             ListPool<CodeInstruction>.Pool.Return(newInstructions);
-        }
-
-        private static void GrantAllTickets(EscapingEventArgs ev)
-        {
-            if (Enum.IsDefined(typeof(SpawnableTeamType), ev.RespawnTickets.Key) && ev.RespawnTickets.Key != SpawnableTeamType.None)
-                RespawnTokensManager.ModifyTokens(ev.RespawnTickets.Key, ev.RespawnTickets.Value);
         }
     }
 

@@ -153,20 +153,11 @@ namespace Exiled.CustomModules.API.Features
         {
             base.UnsubscribeEvents();
 
-            Exiled.Events.Handlers.Server.RestartedRespawnSequence -= OnRestartedRespawnSequence;
             Exiled.Events.Handlers.Server.SelectingRespawnTeam -= OnSelectingRespawnTeam;
             Exiled.Events.Handlers.Server.PreRespawningTeam -= OnPreRespawningTeam;
             Exiled.Events.Handlers.Server.RespawningTeam -= OnRespawningTeam;
             Exiled.Events.Handlers.Server.DeployingTeamRole -= OnDeployingTeamRole;
             Exiled.Events.Handlers.Server.RespawnedTeam -= OnRespawnedTeam;
-        }
-
-        private void OnRestartedRespawnSequence(RestartedRespawnSequenceEventArgs ev)
-        {
-            if (PreviousKnownTeam is not uint id || !CustomTeam.TryGet(id, out CustomTeam team))
-                return;
-
-            ev.TimeForNextSequence = team.NextSequenceTime;
         }
 
         private void OnSelectingRespawnTeam(SelectingRespawnTeamEventArgs ev)

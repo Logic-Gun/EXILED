@@ -12,6 +12,7 @@ namespace Exiled.Events.Patches.Events.Map
 
     using API.Features;
     using API.Features.Core.Generic.Pools;
+    using Exiled.API.Extensions;
     using Exiled.Events.EventArgs.Map;
     using Exiled.Events.Patches.Generic;
     using HarmonyLib;
@@ -67,9 +68,9 @@ namespace Exiled.Events.Patches.Events.Map
                 Player player = Player.Get(referenceHub);
                 if ((instance.transform.position - referenceHub.transform.position).sqrMagnitude >= distance)
                     continue;
-                if (!ExiledEvents.Instance.Config.CanFlashbangsAffectThrower && instance.PreviousOwner.SameLife(new(referenceHub)))
+                if (!ExiledEvents.Instance.Config.CanFlashbangsAffectThrower && instance.PreviousOwner.SameLife(referenceHub))
                     continue;
-                if (!IndividualFriendlyFire.CheckFriendlyFirePlayer(instance.PreviousOwner, player.ReferenceHub) && !instance.PreviousOwner.SameLife(new(referenceHub)))
+                if (!IndividualFriendlyFire.CheckFriendlyFirePlayer(instance.PreviousOwner, player.ReferenceHub) && !instance.PreviousOwner.SameLife(referenceHub))
                     continue;
                 if (Physics.Linecast(instance.transform.position, player.CameraTransform.position, instance._blindingMask))
                     continue;

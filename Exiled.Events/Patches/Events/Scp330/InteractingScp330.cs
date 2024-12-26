@@ -144,12 +144,6 @@ namespace Exiled.Events.Patches.Events.Scp330
                     new(OpCodes.Ret),
                 });
 
-            // This will let us jump to the taken candies code and lock until ldarg_0, meaning we allow base game logic handle candy adding.
-            int addTakenCandiesOffset = -1;
-            int addTakenCandiesIndex = newInstructions.FindLastIndex(
-                instruction => instruction.LoadsField(Field(typeof(Scp330Interobject), nameof(Scp330Interobject._takenCandies)))) + addTakenCandiesOffset;
-
-            newInstructions[addTakenCandiesIndex].WithLabels(shouldNotSever);
             newInstructions[newInstructions.Count - 1].WithLabels(returnLabel);
 
             for (int z = 0; z < newInstructions.Count; z++)
@@ -162,7 +156,7 @@ namespace Exiled.Events.Patches.Events.Scp330
         {
             if (!Scp330Bag.TryGetBag(player, out bag))
             {
-                player.inventory.ServerAddItem(ItemType.SCP330);
+                player.inventory.ServerAddItem(ItemType.SCP330, InventorySystem.Items.ItemAddReason.PickedUp);
 
                 if (!Scp330Bag.TryGetBag(player, out bag))
                     return false;

@@ -143,11 +143,6 @@ namespace Exiled.Events.Handlers
         public static Event<DeployingTeamRoleEventArgs> DeployingTeamRole { get; set; } = new();
 
         /// <summary>
-        /// Invoked after a new respawn sequence has been restarted.
-        /// </summary>
-        public static Event<RestartedRespawnSequenceEventArgs> RestartedRespawnSequence { get; set; } = new();
-
-        /// <summary>
         /// Called before waiting for players.
         /// </summary>
         public static void OnWaitingForPlayers() => WaitingForPlayers.InvokeSafely();
@@ -282,11 +277,5 @@ namespace Exiled.Events.Handlers
         /// </summary>
         /// <param name="ev">The <see cref="DeployingTeamRoleEventArgs"/> instance.</param>
         public static void OnDeployingTeamRole(DeployingTeamRoleEventArgs ev) => DeployingTeamRole.InvokeSafely(ev);
-
-        /// <summary>
-        /// Called after a new respawn sequence has been restarted.
-        /// </summary>
-        /// <param name="ev">The <see cref="RestartedRespawnSequenceEventArgs"/> instance.</param>
-        public static void OnRestartedRespawnSequence(RestartedRespawnSequenceEventArgs ev) => RestartedRespawnSequence.InvokeSafely(ev);
     }
 }

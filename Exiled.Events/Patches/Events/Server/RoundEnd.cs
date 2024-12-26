@@ -68,20 +68,6 @@ namespace Exiled.Events.Patches.Events.Server
 
             newInstructions[index].labels.Add(jmp);
 
-            // Replace ChaosTargetCount == 0 with ChaosTargetCount <= 0
-            offset = 1;
-            index = newInstructions.FindIndex(x => x.Calls(PropertyGetter(typeof(RoundSummary), nameof(RoundSummary.ChaosTargetCount)))) + offset;
-            Label label = (Label)newInstructions[index].operand;
-            newInstructions.RemoveAt(index);
-
-            newInstructions.InsertRange(
-                index,
-                new CodeInstruction[]
-                {
-                    new(OpCodes.Ldc_I4_0),
-                    new(OpCodes.Bgt_S, label),
-                });
-
             offset = -1;
             index = newInstructions.FindIndex(x => x.opcode == OpCodes.Ldfld && x.operand == (object)Field(typeof(RoundSummary), nameof(RoundSummary._roundEnded))) + offset;
 
