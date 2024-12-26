@@ -11,27 +11,22 @@ namespace Exiled.Events.Patches.Events.Server
     using Exiled.Events.EventArgs.Server;
     using Exiled.Events.Handlers;
     using HarmonyLib;
-    using PlayerRoles;
     using Respawning;
     using Respawning.Waves;
 
     /// <summary>
-    /// Patch the <see cref="WaveManager.Spawn"/>.
-    /// Adds <see cref="Server.RespawningTeam"/> and <see cref="Server.DeployingTeamRole"/> events.
+    /// Patch the <see cref="WaveManager.InitiateRespawn"/>.
+    /// Adds <see cref="Server.PreRespawningTeam"/> and <see cref="Server.DeployingTeamRole"/> events.
     /// </summary>
-    [EventPatch(typeof(Server), nameof(Server.RespawningTeam))]
-    [EventPatch(typeof(Server), nameof(Server.DeployingTeamRole))]
-    [HarmonyPatch(typeof(WaveManager), nameof(WaveManager.Spawn))]
-    internal static class RespawningTeam
+    [EventPatch(typeof(Server), nameof(Server.PreRespawningTeam))]
+    [HarmonyPatch(typeof(WaveManager), nameof(WaveManager.InitiateRespawn))]
+    internal static class PreRespawningTeam
     {
         private static bool Prefix(SpawnableWaveBase __instance)
         {
-            RespawningTeamEventArgs ev = new(ref __instance);
-            DeployingTeamRoleEventArgs deployingEv = new(null, RoleTypeId.None);
-            // Add deploying team role event.
-            // DeployingTeamRoleEventArgs ev = new()
+            PreRespawningTeamEventArgs ev = new(ref __instance);
 
-            Server.OnRespawningTeam(ev);
+            Server.OnPreRespawningTeam(ev);
 
             return ev.IsAllowed;
         }

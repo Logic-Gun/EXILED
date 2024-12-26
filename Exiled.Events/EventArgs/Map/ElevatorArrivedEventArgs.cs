@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ElevatorArrivedEventArgs.cs" company="Exiled Team">
 // Copyright (c) Exiled Team. All rights reserved.
 // Licensed under the CC BY-SA 3.0 license.
@@ -22,9 +22,10 @@ namespace Exiled.Events.EventArgs.Map
         /// Initializes a new instance of the <see cref="ElevatorArrivedEventArgs"/> class.
         /// </summary>
         /// <param name="lift"><inheritdoc cref="Lift"/></param>
-        public ElevatorArrivedEventArgs(Lift lift)
+        public ElevatorArrivedEventArgs(Lift lift, Player pl)
         {
             Lift = lift;
+            Player = pl;
             Players = Player.Get(x => x.Lift == Lift).ToList();
         }
 
@@ -32,6 +33,11 @@ namespace Exiled.Events.EventArgs.Map
         /// Gets an elevator.
         /// </summary>
         public Lift Lift { get; }
+
+        /// <summary>
+        /// Gets player who triggered the elevator.
+        /// </summary>
+        public Player Player { get; }
 
         /// <summary>
         /// Gets the players in the elevator.

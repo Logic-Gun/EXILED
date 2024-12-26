@@ -14,12 +14,14 @@ namespace Exiled.Events.EventArgs.Player
     using Interfaces;
 
     using InventorySystem.Items.Firearms.BasicMessages;
-
+    using InventorySystem.Items.Firearms.Modules.Misc;
     using RelativePositioning;
 
     using UnityEngine;
 
     using BaseFirearm = InventorySystem.Items.Firearms.Firearm;
+
+#nullable enable
 
     /// <summary>
     /// Contains all information before a player fires a weapon.
@@ -35,20 +37,31 @@ namespace Exiled.Events.EventArgs.Player
         /// <param name="firearm">
         /// <inheritdoc cref="Firearm" />
         /// </param>
-        /// <param name="msg">
-        /// <inheritdoc cref="ShotMessage" />
+        /// <param name="shotBacktrackData">
+        /// <inheritdoc cref="ShotBacktrackData"/>
         /// </param>
-        public ShootingEventArgs(Player shooter, BaseFirearm firearm, ShotMessage msg)
+        public ShootingEventArgs(Player shooter, BaseFirearm firearm, ref ShotBacktrackData shotBacktrackData)
         {
             Player = shooter;
             Firearm = Item.Get(firearm).As<Firearm>();
-            ShotMessage = msg;
+            ShotBacktrackData = shotBacktrackData;
         }
+
+        /// <summary>
+        /// Gets the shotBacktrackData.
+        /// </summary>
+        public ShotBacktrackData ShotBacktrackData { get; }
 
         /// <summary>
         /// Gets the player who's shooting.
         /// </summary>
         public Player Player { get; }
+
+
+        /// <summary>
+        /// Gets the target of the shot.
+        /// </summary>
+        public Player? Target => ShotBacktrackData.HasPrimaryTarget ? Player.Get(ShotBacktrackData.PrimaryTargetHub) : null;
 
         /// <summary>
         /// Gets the target <see cref="API.Features.Items.Firearm" />.
@@ -59,50 +72,12 @@ namespace Exiled.Events.EventArgs.Player
         public Item Item => Firearm;
 
         /// <summary>
-        /// Gets or sets the <see cref="ShotMessage" /> for the event.
+        /// Gets or sets the direction of the shot.
         /// </summary>
-        public ShotMessage ShotMessage { get; set; }
-
-        /// <summary>
-        /// Gets or sets the position of the shot.
-        /// </summary>
-        public Vector3 ShotPosition
+        public Vector3 Direction
         {
-            get => ShotMessage.TargetPosition.Position;
-            set
-            {
-                ShotMessage msg = ShotMessage;
-                ShotMessage = new ShotMessage
-                {
-                    ShooterPosition = msg.ShooterPosition,
-                    ShooterCameraRotation = msg.ShooterCameraRotation,
-                    ShooterWeaponSerial = msg.ShooterWeaponSerial,
-                    TargetPosition = new RelativePosition(value),
-                    TargetRotation = msg.TargetRotation,
-                    TargetNetId = msg.TargetNetId,
-                };
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the netId of the target of the shot.
-        /// </summary>
-        public uint TargetNetId
-        {
-            get => ShotMessage.TargetNetId;
-            set
-            {
-                ShotMessage msg = ShotMessage;
-                ShotMessage = new ShotMessage
-                {
-                    ShooterPosition = msg.ShooterPosition,
-                    ShooterCameraRotation = msg.ShooterCameraRotation,
-                    ShooterWeaponSerial = msg.ShooterWeaponSerial,
-                    TargetPosition = msg.TargetPosition,
-                    TargetRotation = msg.TargetRotation,
-                    TargetNetId = value,
-                };
-            }
+            get => Player.CameraTransform.forward;
+            set => Player.CameraTransform.forward = value;
         }
 
         /// <summary>

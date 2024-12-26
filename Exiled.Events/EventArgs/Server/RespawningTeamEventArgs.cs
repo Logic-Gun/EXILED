@@ -7,15 +7,15 @@
 
 namespace Exiled.Events.EventArgs.Server
 {
-    using System.Collections.Generic;
-
     using Exiled.API.Features;
     using Exiled.Events.EventArgs.Interfaces;
-
     using PlayerRoles;
-
     using Respawning;
+    using Respawning.Waves;
+    using System;
+    using System.Collections.Generic;
 
+#nullable enable
     /// <summary>
     /// Contains all information before spawning a wave of <see cref="SpawnableTeamType.NineTailedFox" /> or
     /// <see cref="SpawnableTeamType.ChaosInsurgency" />.
@@ -25,45 +25,36 @@ namespace Exiled.Events.EventArgs.Server
         /// <summary>
         /// Initializes a new instance of the <see cref="RespawningTeamEventArgs"/> class.
         /// </summary>
+        /// <param name="spawnableWaveBase"><inheritdoc cref="SpawnableWaveBase"/></param>
         /// <param name="players"><inheritdoc cref="Players"/></param>
-        /// <param name="maxRespawn"><inheritdoc cref="MaxWaveSize"/></param>
-        /// <param name="nextKnownTeam"><inheritdoc cref="NextKnownTeam"/></param>
         /// <param name="isAllowed"><inheritdoc cref="IsAllowed"/></param>
-        public RespawningTeamEventArgs(List<Player> players, int maxRespawn, SpawnableTeamType nextKnownTeam, bool isAllowed = true)
+        public RespawningTeamEventArgs(ref SpawnableWaveBase spawnableWaveBase, List<Player>? players = null, bool isAllowed = true)
         {
+            SpawnableWaveBase = spawnableWaveBase;
             Players = players;
-            MaxWaveSize = maxRespawn;
-            NextKnownTeam = nextKnownTeam;
-            SpawnQueue = new();
-            SpawnableTeam.GenerateQueue(SpawnQueue, players.Count);
             IsAllowed = isAllowed;
         }
 
         /// <summary>
-        /// Gets the list of players that are going to be respawned.
+        /// Gets or sets the current spawnable team.
         /// </summary>
-        public List<Player> Players { get; }
+        public SpawnableWaveBase SpawnableWaveBase { get; set; }
 
         /// <summary>
-        /// Gets a value the next team to be respawned.
+        /// Gets the target faction.
         /// </summary>
-        public SpawnableTeamType NextKnownTeam { get; }
+        public Faction TargetFaction => SpawnableWaveBase.TargetFaction;
+
+        /// <summary>
+        /// Gets the list of players that are going to be respawned.
+        /// </summary>
+        [Obsolete]
+        public List<Player> Players { get; }
 
         /// <summary>
         /// Gets the maximum amount of respawnable players.
         /// </summary>
-        public int MaxWaveSize { get; }
-
-        /// <summary>
-        /// Gets or sets the RoleTypeId spawn queue.
-        /// </summary>
-        public Queue<RoleTypeId> SpawnQueue { get; set; }
-
-        /// <summary>
-        /// Gets the current spawnable team.
-        /// </summary>
-        public SpawnableTeamHandlerBase SpawnableTeam
-            => RespawnManager.SpawnableTeams.TryGetValue(NextKnownTeam, out SpawnableTeamHandlerBase @base) ? @base : null;
+        public int MaxWaveSize => SpawnableWaveBase.MaxWaveSize;
 
         /// <summary>
         /// Gets or sets a value indicating whether or not the spawn can occur.

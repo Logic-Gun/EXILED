@@ -25,39 +25,19 @@ namespace Exiled.Events.EventArgs.Server
     public class RestartedRespawnSequenceEventArgs : IExiledEvent
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="RestartedRespawnSequenceEventArgs"/> class.
-        /// </summary>
-        /// <param name="respawnManager"><inheritdoc cref="RespawnManager"/></param>
-        public RestartedRespawnSequenceEventArgs(RespawnManager respawnManager) => RespawnManager = respawnManager;
-
-        /// <summary>
-        /// Gets the <see cref="RespawnManager"/> instance.
-        /// </summary>
-        public RespawnManager RespawnManager { get; }
-
-        /// <summary>
         /// Gets the sequence's timer.
         /// </summary>
-        public Stopwatch Timer => RespawnManager._stopwatch;
-
-        /// <summary>
-        /// Gets or sets the current <see cref="RespawnManager.RespawnSequencePhase"/>.
-        /// </summary>
-        public RespawnManager.RespawnSequencePhase CurrentRespawnSequencePhase
-        {
-            get => RespawnManager._curSequence;
-            set => RespawnManager._curSequence = value;
-        }
+        public Stopwatch Timer => WaveManager._nextWave.ti;
 
         /// <summary>
         /// Gets or sets the time for the next sequence.
         /// </summary>
         public float TimeForNextSequence
         {
-            get => RespawnManager.TimeTillRespawn;
+            get { }
             set
             {
-                RespawnManager._timeForNextSequence = value;
+                WaveManager._timeForNextSequence = value;
                 Timer.Restart();
             }
         }

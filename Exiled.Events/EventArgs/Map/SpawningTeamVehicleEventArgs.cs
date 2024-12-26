@@ -9,6 +9,7 @@ namespace Exiled.Events.EventArgs.Map
 {
     using Exiled.Events.EventArgs.Interfaces;
     using Respawning;
+    using Respawning.Waves;
 
     /// <summary>
     /// Contains all information before the server spawns a team's respawn vehicle.
@@ -18,22 +19,31 @@ namespace Exiled.Events.EventArgs.Map
         /// <summary>
         /// Initializes a new instance of the <see cref="SpawningTeamVehicleEventArgs" /> class.
         /// </summary>
-        /// <param name="team">
+        /// <param name="spawnableWaveBase">
         /// The team who the vehicle belongs to.
+        /// </param>
+        /// <param name="updateMessageFlags">
+        /// The flags of the update message.
         /// </param>
         /// <param name="isAllowed">
         /// <inheritdoc cref="IsAllowed" />
         /// </param>
-        public SpawningTeamVehicleEventArgs(SpawnableTeamType team, bool isAllowed = true)
+        public SpawningTeamVehicleEventArgs(ref SpawnableWaveBase spawnableWaveBase, UpdateMessageFlags updateMessageFlags, bool isAllowed = true)
         {
-            Team = team;
+            Wave = spawnableWaveBase;
+            Flags = updateMessageFlags;
             IsAllowed = isAllowed;
         }
 
         /// <summary>
         /// Gets or sets which vehicle should spawn.
         /// </summary>
-        public SpawnableTeamType Team { get; set; }
+        public SpawnableWaveBase Wave { get; set; }
+
+        /// <summary>
+        /// Gets the flags of the update message.
+        /// </summary>
+        public UpdateMessageFlags Flags { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether or not the vehicle can be spawned.

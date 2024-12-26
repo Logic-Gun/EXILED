@@ -21,7 +21,7 @@ namespace Exiled.Events.Patches.Events.Player.FirearmActionEvents
 
     /// <summary>
     /// Patches <see cref="FlashlightAttachment.ServerSendStatus" />.
-    /// Adds <see cref="Handlers.Player.TogglingWeaponFlashlight" /> & <see cref="Handlers.Player.ToggledWeaponFlashlight" /> event.
+    /// Adds <see cref="Handlers.Player.TogglingWeaponFlashlight"/><see cref="Handlers.Player.ToggledWeaponFlashlight" /> event.
     /// </summary>
     [EventPatch(typeof(Handlers.Player), nameof(Handlers.Player.TogglingWeaponFlashlight))]
     [HarmonyPatch(typeof(FlashlightAttachment), nameof(FlashlightAttachment.ServerSendStatus))]

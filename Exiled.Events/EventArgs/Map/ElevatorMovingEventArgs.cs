@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ElevatorMovingEventArgs.cs" company="Exiled Team">
 // Copyright (c) Exiled Team. All rights reserved.
 // Licensed under the CC BY-SA 3.0 license.
@@ -23,9 +23,10 @@ namespace Exiled.Events.EventArgs.Map
         /// </summary>
         /// <param name="lift"><inheritdoc cref="Lift"/></param>
         /// <param name="isAllowed"><inheritdoc cref="IsAllowed"/></param>
-        public ElevatorMovingEventArgs(Lift lift, bool isAllowed = true)
+        public ElevatorMovingEventArgs(Lift lift, Player pl, bool isAllowed = true)
         {
             Lift = lift;
+            Player = pl;
             Players = Player.Get(x => x.Lift == lift).ToList();
             IsAllowed = isAllowed;
         }
@@ -34,6 +35,11 @@ namespace Exiled.Events.EventArgs.Map
         /// Gets the current elevator.
         /// </summary>
         public Lift Lift { get; }
+
+        /// <summary>
+        /// Gets the player who triggered the elevator.
+        /// </summary>
+        public Player Player { get; }
 
         /// <summary>
         /// Gets a list of all players in elevator.

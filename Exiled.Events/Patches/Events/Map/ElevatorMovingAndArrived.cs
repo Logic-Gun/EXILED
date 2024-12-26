@@ -1,4 +1,4 @@
-﻿// -----------------------------------------------------------------------
+// -----------------------------------------------------------------------
 // <copyright file="ElevatorMovingAndArrived.cs" company="Exiled Team">
 // Copyright (c) Exiled Team. All rights reserved.
 // Licensed under the CC BY-SA 3.0 license.
@@ -7,87 +7,38 @@
 
 namespace Exiled.Events.Patches.Events.Map
 {
-    using System.Collections.Generic;
-    using System.Reflection.Emit;
-
     using Exiled.API.Features;
-    using Exiled.API.Features.Core.Generic.Pools;
     using Exiled.Events.Attributes;
     using Exiled.Events.EventArgs.Map;
     using HarmonyLib;
     using Interactables.Interobjects;
-    using Mirror;
-
-    using static HarmonyLib.AccessTools;
+    using System.Collections.Generic;
 
     /// <summary>
-    /// Patches <see cref="ElevatorChamber.TrySetDestination"/>
+    /// Patches <see cref="ElevatorChamber.ServerInteract"/>
     /// to add <see cref="Handlers.Map.ElevatorArrived"/> and <see cref="Handlers.Map.ElevatorMoving"/> events.
     /// </summary>
     [EventPatch(typeof(Handlers.Map), nameof(Handlers.Map.ElevatorArrived))]
     [EventPatch(typeof(Handlers.Map), nameof(Handlers.Map.ElevatorMoving))]
-    [HarmonyPatch(typeof(ElevatorChamber), nameof(ElevatorChamber.TrySetDestination))]
+    [HarmonyPatch(typeof(ElevatorChamber), nameof(ElevatorChamber.ServerInteract))]
     internal class ElevatorMovingAndArrived
     {
-        private static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+        private static bool Prefix(ElevatorChamber __instance, Player pl, List<ElevatorDoor> floorDoors)
         {
-            List<CodeInstruction> newInstructions = ListPool<CodeInstruction>.Pool.Get(instructions);
+            ElevatorMovingEventArgs ev = new(Lift.Get(__instance), pl, true);
 
-            int index = newInstructions.FindIndex(x => x.Calls(PropertyGetter(typeof(NetworkServer), nameof(NetworkServer.active))));
+            Handlers.Map.OnElevatorMoving(ev);
 
-            Label continueLabel = generator.DefineLabel();
+            if (!ev.IsAllowed)
+            {
+                return false;
+            }
 
-            newInstructions.InsertRange(
-                index,
-                new[]
-                {
-                    // Lift.Get(this);
-                    new CodeInstruction(OpCodes.Ldarg_0).MoveLabelsFrom(newInstructions[index]),
-                    new(OpCodes.Call, Method(typeof(Lift), nameof(Lift.Get), new[] { typeof(ElevatorChamber) })),
+            ElevatorArrivedEventArgs arrivedEv = new(Lift.Get(__instance), pl);
 
-                    // true
-                    new(OpCodes.Ldc_I4_1),
+            Handlers.Map.OnElevatorArrived(arrivedEv);
 
-                    // ElevatorMovingEventArgs ev = new(Lift, true);
-                    new(OpCodes.Newobj, GetDeclaredConstructors(typeof(ElevatorMovingEventArgs))[0]),
-                    new(OpCodes.Dup),
-
-                    // Handlers.Map.OnElevatorMoving(ev);
-                    new(OpCodes.Call, Method(typeof(Handlers.Map), nameof(Handlers.Map.OnElevatorMoving))),
-
-                    // if (!ev.IsAllowed)
-                    //    return false;
-                    new(OpCodes.Callvirt, PropertyGetter(typeof(ElevatorMovingEventArgs), nameof(ElevatorMovingEventArgs.IsAllowed))),
-                    new(OpCodes.Brtrue_S, continueLabel),
-
-                    new(OpCodes.Ldc_I4_0),
-                    new(OpCodes.Ret),
-
-                    new CodeInstruction(OpCodes.Nop).WithLabels(continueLabel),
-                });
-
-            int offset = 1;
-            index = newInstructions.FindLastIndex(x => x.Calls(Method(typeof(ElevatorChamber), nameof(ElevatorChamber.SetInnerDoor)))) + offset;
-
-            newInstructions.InsertRange(
-                index,
-                new[]
-                {
-                    // Lift.Get(this);
-                    new CodeInstruction(OpCodes.Ldarg_0).MoveLabelsFrom(newInstructions[index]),
-                    new(OpCodes.Call, Method(typeof(Lift), nameof(Lift.Get), new[] { typeof(ElevatorChamber) })),
-
-                    // ElevatorArrivedEventArgs ev = new(Lift);
-                    new(OpCodes.Newobj, GetDeclaredConstructors(typeof(ElevatorArrivedEventArgs))[0]),
-
-                    // Handlers.Map.OnElevatorArrived(ev);
-                    new(OpCodes.Call, Method(typeof(Handlers.Map), nameof(Handlers.Map.OnElevatorArrived))),
-                });
-
-            for (int z = 0; z < newInstructions.Count; z++)
-                yield return newInstructions[z];
-
-            ListPool<CodeInstruction>.Pool.Return(newInstructions);
+            return true;
         }
     }
 }
